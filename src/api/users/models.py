@@ -1,0 +1,27 @@
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
+from src.db.base import Base
+from src.api.users.schemas import UserSchema
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    full_name = Column(String, index=True)
+    is_active = Column(Boolean, default=True)
+    is_superuser = Column(Boolean, default=False)
+    is_verified = Column(Boolean, default=False)
+
+    tasks = relationship("Task", back_populates="owner")
+
+    def to_read_model(self) -> UserSchema:
+        return UserSchema(
+            id=self.id,
+            email=self.email,
+            full_name=self.full_name,
+            is_active=self.is_active,
+            is_superuser=self.is_superuser,
+        )
