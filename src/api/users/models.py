@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from src.api.tasks.models import Task
 from src.db.base import Base
-from src.api.users.schemas import UserSchema
-
+from src.api.users.schemas import UserOut
 
 class User(Base):
     __tablename__ = "users"
@@ -18,11 +17,9 @@ class User(Base):
 
     tasks = relationship("Task", back_populates="owner")
 
-    def to_read_model(self) -> UserSchema:
-        return UserSchema(
+    def to_read_model(self) -> UserOut:
+        return UserOut(
             id=self.id,
             email=self.email,
             full_name=self.full_name,
-            is_active=self.is_active,
-            is_superuser=self.is_superuser,
         )
