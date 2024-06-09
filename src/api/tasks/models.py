@@ -9,12 +9,12 @@ from src.db.base import Base
 class Task(Base):
     __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, index=True, nullable=False)
     description = Column(String, index=True, nullable=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
     completed = Column(Boolean, default=False)
 
+    user_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="tasks")
 
     def to_read_model(self) -> TaskSchema:
@@ -22,6 +22,6 @@ class Task(Base):
             id=self.id,
             title=self.title,
             description=self.description,
-            author_id=self.owner_id,
+            user_id=self.user_id,
             completed=self.completed
         )

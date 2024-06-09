@@ -5,7 +5,7 @@ class TaskSchema(BaseModel):
     id: int
     title: str
     description: str | None = None
-    owner_id: int
+    user_id: int
     completed: bool
 
     class Config:
