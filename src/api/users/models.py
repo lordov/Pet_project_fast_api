@@ -4,10 +4,12 @@ from src.api.tasks.models import Task
 from src.db.base import Base
 from src.api.users.schemas import UserOut
 
+
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     full_name = Column(String, index=True)

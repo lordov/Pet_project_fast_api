@@ -1,9 +1,12 @@
-from fastapi import HTTPException
-from sqlalchemy import insert
+from typing import Annotated
+from fastapi import Depends, HTTPException
+from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.db.base import get_async_session
 from src.api.users.models import User
 from src.api.users.schemas import UserInDB, UserCreate
+from src.api.dependencies.auth import oauth2_scheme
 
 
 def fake_password_hasher(raw_password: str):
@@ -34,3 +37,9 @@ async def regisrty_user(
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=400, detail=str(e))
+
+
+async def get_user(id, session: AsyncSession = Depends(get_async_session)):
+    query = select(User).where(User.id == id)
+    result = await session.execute(query)
+    return result
