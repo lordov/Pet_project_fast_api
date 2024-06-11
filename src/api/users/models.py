@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from src.api.tasks.models import Task
 from src.db.base import Base
-from src.api.users.schemas import UserOut
+from src.api.users.schemas import UserInDB
 
 
 class User(Base):
@@ -19,9 +19,32 @@ class User(Base):
 
     tasks = relationship("Task", back_populates="owner")
 
-    def to_read_model(self) -> UserOut:
-        return UserOut(
+    def to_read_model(self) -> UserInDB:
+        return UserInDB(
             id=self.id,
             email=self.email,
             full_name=self.full_name,
+            username=self.username,
+            hashed_password=self.hashed_password,
+            is_active=self.is_active,
         )
+
+
+fake_users_db = {
+    "johndoe": {
+        "id": 1,
+        "username": "johndoe",
+        "full_name": "John Doe",
+        "email": "johndoe@example.com",
+        "hashed_password": "supersecretsecret",
+        "is_active": True,
+    },
+    "alice": {
+        "id": 2,
+        "username": "alice",
+        "full_name": "Alice Wonderson",
+        "email": "alice@example.com",
+        "hashed_password": "supersecretsecret2",
+        "is_active": False,
+    },
+}

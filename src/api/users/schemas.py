@@ -20,6 +20,7 @@ class UserInDB(UserSchema):
 
 class UserCreate(BaseModel):
     email: EmailStr
+    username: str
     password: str
     full_name: str | None = None
     is_active: bool | None = True
@@ -33,4 +34,5 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
+    username: str
     full_name: str | None = None

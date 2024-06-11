@@ -3,21 +3,17 @@ from fastapi import Depends, HTTPException
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.base import get_async_session
+
 from src.api.users.models import User
-from src.api.users.schemas import UserInDB, UserCreate
-from src.api.dependencies.auth import oauth2_scheme
-
-
-def fake_password_hasher(raw_password: str):
-    return "supersecret" + raw_password
+from src.api.users.schemas import UserCreate
+from src.api.dependencies.auth import password_hasher
 
 
 async def regisrty_user(
         user_in: UserCreate,
         session: AsyncSession
 ) -> User:
-    hashed_password = fake_password_hasher(user_in.password)
+    hashed_password = password_hasher(user_in.password)
     user_data = user_in.model_dump()
     user_data["hashed_password"] = hashed_password
     del user_data["password"]
@@ -39,7 +35,11 @@ async def regisrty_user(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-async def get_user(id, session: AsyncSession = Depends(get_async_session)):
-    query = select(User).where(User.id == id)
+async def get_user(username, session: AsyncSession):
+    query = select(User).where(User.username == username)
     result = await session.execute(query)
-    return result
+    try:
+        db_dict = result.scalars().all()[0].to_read_model()
+    except IndexError:
+        return False
+    return db_dict

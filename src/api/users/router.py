@@ -41,18 +41,18 @@ async def read_user(
     return user
 
 
-# @router.post("/", response_model=UserOut)
-# async def create_user(
-#     new_user: UserCreate,
-#     session: AsyncSession = Depends(get_async_session),
-# ) -> UserOut:
-#     try:
-#         user_saved = await regisrty_user(new_user, session)
-#         return user_saved
-#     except ResponseValidationError:
-#         raise ResponseValidationError
-#     except Exception as e:
-#         return {
-#             "message": "User not created",
-#             "error": str(e)
-#         }
+@router.post("/regisrty", response_model=UserOut)
+async def create_user(
+    new_user: UserCreate,
+    session: AsyncSession = Depends(get_async_session),
+) -> UserOut:
+    try:
+        user_saved = await regisrty_user(new_user, session)
+        return user_saved
+    except ResponseValidationError:
+        raise ResponseValidationError
+    except Exception as e:
+        return {
+            "message": "User not created",
+            "error": str(e)
+        }

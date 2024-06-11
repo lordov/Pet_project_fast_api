@@ -19,7 +19,8 @@ DB_PORT_TEST = os.getenv("DB_PORT_TEST")
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
 
-SECRET_PATH = os.getenv("SECRET")
+SECRET_KEY = os.getenv("SECRET")
+ALGORITHM = os.getenv("ALGORITHM")
 
 SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
