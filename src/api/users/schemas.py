@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel, EmailStr
 
 
@@ -36,3 +37,9 @@ class UserOut(BaseModel):
     email: EmailStr
     username: str
     full_name: str | None = None
+
+
+class ResponseModel(BaseModel):
+    message: str
+    result: UserOut | None = None
+    error: str | None = None
