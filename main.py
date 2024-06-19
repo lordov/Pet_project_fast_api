@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Request, status, Depends
 from fastapi.exceptions import ResponseValidationError
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi.templating import Jinja2Templates
 
 
 from src.api.users.schemas import UserSchema
@@ -25,6 +26,8 @@ app = FastAPI(
     title="FastAPI project",
 )
 
+# Указываем директорию с шаблонами
+templates = Jinja2Templates(directory="templates")
 
 # Благодаря этой функции клиент видит ошибки, происходящие на сервере, вместо "Internal server error"
 # @app.exception_handler(ResponseValidationError)
@@ -63,6 +66,17 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return {"access_token": user.username, "token_type": "bearer"}
+
+
+@app.get('/')
+async def html_answer(request: Request):
+    return templates.TemplateResponse('index.html', {"request": request})
+
+
+@app.post('/calculate')
+async def calculate_sum(num1: int, num2: int):
+    result = num1 + num2
+    return {"result": result}
 
 
 @app.get("/mine")

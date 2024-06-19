@@ -43,3 +43,13 @@ async def get_user(username, session: AsyncSession):
     except IndexError:
         return False
     return db_dict
+
+
+async def get_all_user(session: AsyncSession):
+    query = select(User)
+    result = await session.execute(query)
+    try:
+        db_dict = result.scalars().all()
+    except IndexError:
+        return False
+    return db_dict
