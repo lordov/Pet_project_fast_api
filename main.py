@@ -1,10 +1,7 @@
 import uvicorn
 
-from datetime import timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import FastAPI, HTTPException, Request, status, Depends
 
 from fastapi.exceptions import ResponseValidationError
@@ -15,15 +12,10 @@ from fastapi.templating import Jinja2Templates
 
 from src.api.users.schemas import UserOut, UserSchema
 from src.api.router import all_routers
-from src.api.auth.models import Token
 
-from src.api.dependencies.auth import (
-    get_current_active_user, create_access_token
+from src.core.security.auth import (
+    get_current_active_user
 )
-
-from src.db.base import get_async_session
-from src.db.db import authenticate_user
-from src.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 app = FastAPI(

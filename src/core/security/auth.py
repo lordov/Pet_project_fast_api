@@ -1,23 +1,25 @@
 import jwt
+
 from typing import Annotated
 from datetime import datetime, timezone, timedelta
+from functools import wraps
 
 from fastapi import status, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from src.api.users.schemas import UserSchema
+from src.api.users.schemas import UserSchema, Role
 from src.api.auth.models import TokenData
 from src.db.db import get_user
 from src.db.base import get_async_session
 from src.core.config import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", scheme_name="JWT")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", scheme_name="JWT")
 
 
 # Создаем токен
-
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -61,3 +63,18 @@ async def get_current_active_user(
     if current_user.is_active is False:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+def check_role(role: list[Role]):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(current_user: Annotated[UserSchema, Depends(get_current_active_user)], *args, **kwargs):
+            if current_user.role not in role:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Acces denied",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            return await func(current_user, *args, **kwargs)
+        return wrapper
+    return decorator

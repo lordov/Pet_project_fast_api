@@ -13,8 +13,15 @@ from src.db.base import get_async_session
 from src.db.db import authenticate_user, regisrty_user
 
 from src.api.auth.models import Token
-from src.api.dependencies.auth import create_access_token, get_current_active_user
-from src.api.users.schemas import UserCreate, UserOut, UserSchema
+from src.core.security.auth import (
+    create_access_token, get_current_active_user,
+    check_role
+)
+from src.api.users.schemas import (
+    UserCreate, UserOut,
+    UserSchema, Role
+)
+
 
 router = APIRouter(
     prefix="/auth",
@@ -42,7 +49,7 @@ async def create_user(
         }
 
 
-@router.post("/login")
+@router.post("/token")
 async def login(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         session: AsyncSession = Depends(get_async_session)):
@@ -61,10 +68,8 @@ async def login(
 
 
 @router.get("/admin_resource", response_model=UserSchema)
+@check_role(role = [Role.ADMIN])
 async def admin_permission(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=400, detail="Acces denied")
-
     return current_user

@@ -1,11 +1,18 @@
 from pydantic import BaseModel, EmailStr, Field
+from enum import Enum
+
+
+class Role(Enum):
+    ADMIN = 'admin'
+    USER = 'user'
+    GUEST = 'guest'
 
 
 class UserSchema(BaseModel):
     id: int
     username: str
     email: EmailStr
-    role: str | None = 'guest'
+    role: Role | None = 'guest'
     full_name: str | None = None
     is_active: bool | None = True
     is_superuser: bool | None = False
