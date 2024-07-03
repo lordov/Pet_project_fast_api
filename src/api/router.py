@@ -4,7 +4,7 @@ from src.api.auth.router import router as auth_router
 
 
 all_routers = [
+    auth_router,
     users_router,
     tasks_router,
-    auth_router
 ]

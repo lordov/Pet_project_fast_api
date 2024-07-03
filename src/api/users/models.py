@@ -13,6 +13,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     full_name = Column(String, index=True)
+    role = Column(String, default="guest")
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
     is_verified = Column(Boolean, default=False)
@@ -24,6 +25,7 @@ class User(Base):
             id=self.id,
             email=self.email,
             full_name=self.full_name,
+            role=self.role,
             username=self.username,
             hashed_password=self.hashed_password,
             is_active=self.is_active,

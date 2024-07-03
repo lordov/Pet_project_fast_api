@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.users.models import User
 from src.api.users.schemas import UserCreate
-from src.api.dependencies.auth import password_hasher
+from src.core.security.pwdcrypt import verify_password, password_hasher
 
 
 async def regisrty_user(
@@ -35,7 +35,7 @@ async def regisrty_user(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-async def get_user(username, session: AsyncSession):
+async def get_user(username: str, session: AsyncSession):
     query = select(User).where(User.username == username)
     result = await session.execute(query)
     try:
@@ -53,3 +53,16 @@ async def get_all_user(session: AsyncSession):
     except IndexError:
         return False
     return db_dict
+
+
+async def authenticate_user(
+    username: str,
+    password: str,
+    session: AsyncSession
+):
+    user: User = await get_user(username, session)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user

@@ -1,42 +1,57 @@
+import jwt
 from typing import Annotated
+from datetime import datetime, timezone, timedelta
 
 from fastapi import status, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from passlib.context import CryptContext
 
 from src.api.users.schemas import UserSchema
-from src.api.users.schemas import UserSchema, UserInDB
-from src.api.users.models import fake_users_db, User
+from src.api.auth.models import TokenData
+from src.db.db import get_user
+from src.db.base import get_async_session
+from src.core.config import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", scheme_name="JWT")
 
 
-pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
+# Создаем токен
 
 
-def fake_decode_token(token: str) -> UserSchema:
-    return UserSchema(
-        username=token + "fakedecoded", email="john@example.com", full_name="John Doe"
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Проверяем текущего юзера
+
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    session: AsyncSession = Depends(get_async_session)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
-
-
-def password_hasher(password: str):
-    return pwd_context.hash(password)
-
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    user = fake_decode_token(token)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    try:
+        payload: dict = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except jwt.InvalidTokenError:
+        raise credentials_exception
+    user = await get_user(username=token_data.username, session=session)
+    if user is None:
+        raise credentials_exception
     return user
 
 

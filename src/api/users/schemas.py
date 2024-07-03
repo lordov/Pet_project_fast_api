@@ -1,11 +1,11 @@
-from typing import Any
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserSchema(BaseModel):
     id: int
     username: str
     email: EmailStr
+    role: str | None = 'guest'
     full_name: str | None = None
     is_active: bool | None = True
     is_superuser: bool | None = False
@@ -22,7 +22,7 @@ class UserInDB(UserSchema):
 class UserCreate(BaseModel):
     email: EmailStr
     username: str
-    password: str
+    password: str = Field(min_length=16, max_length=64)
     full_name: str | None = None
     is_active: bool | None = True
     is_superuser: bool | None = False
