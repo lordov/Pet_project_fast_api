@@ -4,6 +4,8 @@ from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+from src.api.tasks.models import Task
+from src.api.tasks.schemas import AddTaskSchema, TaskSchema
 from src.api.users.models import User
 from src.api.users.schemas import UserCreate
 from src.core.security.pwdcrypt import verify_password, password_hasher
@@ -66,3 +68,17 @@ async def authenticate_user(
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+
+async def get_all_tasks(session: AsyncSession, user_id: int):
+    query = select(Task).where(Task.user_id == user_id)
+    result = await session.execute(query)
+    result_model = result.scalars().all()
+    return result_model
+
+
+async def add_task(session: AsyncSession, task: AddTaskSchema, user_id: int):
+    task = Task(**task.model_dump(), user_id=user_id)
+    session.add(task)
+    await session.commit()
+    return task.to_read_model()

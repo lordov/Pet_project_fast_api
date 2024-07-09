@@ -1,6 +1,5 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from fastapi.exceptions import ResponseValidationError
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,7 +7,7 @@ from src.db.base import get_async_session
 from src.db.db import get_user, get_all_user, regisrty_user
 from src.core.security.auth import oauth2_scheme
 from src.api.users.models import User
-from src.api.users.schemas import UserCreate, UserSchema, UserOut
+from src.api.users.schemas import UserOut
 
 
 router = APIRouter(

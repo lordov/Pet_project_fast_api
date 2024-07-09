@@ -10,3 +10,12 @@ class TaskSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AddTaskSchema(BaseModel):
+    title: str
+    description: str | None = None
+
+    class Config:
+        from_attributes = True
+    

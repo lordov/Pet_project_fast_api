@@ -68,7 +68,7 @@ async def login(
 
 
 @router.get("/admin_resource", response_model=UserSchema)
-@check_role(role = [Role.ADMIN])
+@check_role(role=[Role.ADMIN])
 async def admin_permission(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
 ):
