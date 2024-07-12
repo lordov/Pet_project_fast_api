@@ -18,4 +18,12 @@ class AddTaskSchema(BaseModel):
 
     class Config:
         from_attributes = True
-    
+
+
+class TaskResponseSchema(BaseModel):
+    id: int
+    title: str
+    description: str
+
+    class Config:
+        from_attributes = True

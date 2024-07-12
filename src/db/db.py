@@ -1,11 +1,11 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from src.api.tasks.models import Task
-from src.api.tasks.schemas import AddTaskSchema, TaskSchema
+from src.api.tasks.schemas import AddTaskSchema, TaskResponseSchema, TaskSchema
 from src.api.users.models import User
 from src.api.users.schemas import UserCreate
 from src.core.security.pwdcrypt import verify_password, password_hasher
@@ -70,15 +70,47 @@ async def authenticate_user(
     return user
 
 
-async def get_all_tasks(session: AsyncSession, user_id: int):
+async def get_all_tasks_db(session: AsyncSession, user_id: int):
     query = select(Task).where(Task.user_id == user_id)
     result = await session.execute(query)
     result_model = result.scalars().all()
     return result_model
 
 
-async def add_task(session: AsyncSession, task: AddTaskSchema, user_id: int):
-    task = Task(**task.model_dump(), user_id=user_id)
-    session.add(task)
+async def get_task_db(session: AsyncSession, task_id: int, user_id: int):
+    query = select(Task).where(Task.id == task_id and user_id == user_id)
+    result = await session.execute(query)
+    try:
+        db_dict = result.scalars().all()[0].to_read_model()
+    except IndexError:
+        return False
+    return db_dict
+
+
+async def update_task_db(session: AsyncSession, task: AddTaskSchema, task_id: int, user_id: int):
+    stmt = (
+        update(Task)
+        .where(Task.id == task_id, Task.user_id == user_id)
+        .values(**task.model_dump())
+        .returning(Task.id, Task.title, Task.description)
+    )
+    result = await session.execute(stmt)
     await session.commit()
-    return task.to_read_model()
+    
+    updated_task = result.fetchone()
+    
+    if not updated_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    return TaskResponseSchema(
+        id=updated_task.id, 
+        title=updated_task.title, 
+        description=updated_task.description
+        )
+
+
+async def add_task(session: AsyncSession, task: AddTaskSchema, user_id: int):
+    new_task = Task(**task.model_dump(), user_id=user_id)
+    session.add(new_task)
+    await session.commit()
+    return TaskSchema.model_validate(new_task)
