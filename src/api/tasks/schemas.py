@@ -27,3 +27,10 @@ class TaskResponseSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+    class Config:
+        from_attributes = True

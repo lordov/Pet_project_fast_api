@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
-from sqlalchemy import insert, select, update
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -96,17 +96,17 @@ async def update_task_db(session: AsyncSession, task: AddTaskSchema, task_id: in
     )
     result = await session.execute(stmt)
     await session.commit()
-    
+
     updated_task = result.fetchone()
-    
+
     if not updated_task:
         raise HTTPException(status_code=404, detail="Task not found")
-    
+
     return TaskResponseSchema(
-        id=updated_task.id, 
-        title=updated_task.title, 
+        id=updated_task.id,
+        title=updated_task.title,
         description=updated_task.description
-        )
+    )
 
 
 async def add_task(session: AsyncSession, task: AddTaskSchema, user_id: int):
@@ -114,3 +114,16 @@ async def add_task(session: AsyncSession, task: AddTaskSchema, user_id: int):
     session.add(new_task)
     await session.commit()
     return TaskSchema.model_validate(new_task)
+
+
+async def delete_task_db(session: AsyncSession, task_id: int, user_id: int):
+
+    stmt = (
+        delete(Task)
+        .where(Task.id == task_id, Task.user_id == user_id)
+        .returning(Task.id, Task.title, Task.description)
+    )
+    await session.execute(stmt)
+    await session.commit()
+
+    return True
