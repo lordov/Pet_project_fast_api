@@ -31,9 +31,6 @@ class UserCreate(BaseModel):
     username: str
     password: str = Field(min_length=16, max_length=64)
     full_name: str | None = None
-    is_active: bool | None = True
-    is_superuser: bool | None = False
-    is_verified: bool | None = False
 
     class Config:
         from_attributes = True

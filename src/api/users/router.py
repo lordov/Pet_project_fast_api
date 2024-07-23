@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.base import get_async_session
 from src.db.db import get_user, get_all_user, regisrty_user
-from src.core.security.auth import oauth2_scheme
+from src.core.security.auth import check_role, get_current_active_user, oauth2_scheme
 from src.api.users.models import User
-from src.api.users.schemas import UserOut
+from src.api.users.schemas import Role, UserOut, UserSchema
 
 
 router = APIRouter(
@@ -17,7 +17,9 @@ router = APIRouter(
 
 
 @router.get("/")
+@check_role(role=[Role.USER, Role.ADMIN])
 async def read_users(
+        current_user: Annotated[UserSchema, Depends(get_current_active_user)],
         token: Annotated[str, Depends(oauth2_scheme)],
         session: AsyncSession = Depends(get_async_session)
 ):
@@ -32,7 +34,9 @@ async def read_users(
 
 
 @router.get("/{user_id}", response_model=UserOut)
+@check_role(role=[Role.USER, Role.ADMIN])
 async def read_user(
+    current_user: Annotated[UserSchema, Depends(get_current_active_user)],
     user_id: int,
     session: AsyncSession = Depends(get_async_session)
 ):
@@ -43,6 +47,3 @@ async def read_user(
     user = result.scalars().first()
 
     return user
-
-
-
