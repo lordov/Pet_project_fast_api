@@ -29,8 +29,8 @@ class UserInDB(UserSchema):
 class UserCreate(BaseModel):
     email: EmailStr
     username: str
-    password: str = Field(min_length=16, max_length=64)
-    full_name: str | None = None
+    password: str = Field(min_length=8, max_length=64)
+    fullname: str | None = None
 
     class ConfigDict:
         from_attributes = True
@@ -40,7 +40,7 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     username: str
-    full_name: str | None = None
+    fullname: str | None = None
 
 
 class ResponseModel(BaseModel):

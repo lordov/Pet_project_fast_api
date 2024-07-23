@@ -54,6 +54,6 @@ async def read_user(
     user = result.scalars().first()
 
     if not user:
-        raise UserNotFoundException(msg=[f"User with id {user_id} not found"])
+        raise UserNotFoundException(errors=[f"User with id {user_id} not found"])
 
     return user

@@ -72,7 +72,7 @@ async def read_users_me(
 ):
     return current_user
 
-
+# Для написания теста
 @app.get("/sum/")
 def calculate_sum(a: int, b: int):
     return {"result": a + b}

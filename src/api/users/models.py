@@ -12,7 +12,7 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    full_name = Column(String, index=True)
+    fullname = Column(String, index=True)
     role = Column(String, default="user")
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)

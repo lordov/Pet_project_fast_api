@@ -7,13 +7,13 @@ class CustomException(HTTPException):
 
 
 class UserNotFoundException(HTTPException):
-    def __init__(self, msg: list[str]):
+    def __init__(self, errors: list[str]):
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        self.msg = msg
+        self.errors = errors
 
 
 class UserAlreadyExists(HTTPException):
-    def __init__(self, msg: list[str]):
+    def __init__(self, errors: list[str]):
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST,
                          detail="This user already exist")
-        self.msg = msg
+        self.errors = errors

@@ -37,7 +37,7 @@ async def regisrty_user(
     except IntegrityError:
         await session.rollback()
         raise UserAlreadyExists(
-            msg=[f"User with id {user_in.username} already exists"])
+            errors=[f"User with id {user_in.username} already exists"])
 
     except Exception as e:
         await session.rollback()

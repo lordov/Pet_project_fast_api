@@ -5,6 +5,7 @@ from main import app
 client = TestClient(app)
 
 
+
 def test_calculate_sum():
     # Test case 1: валидные входные данные
     response = client.get("/sum/?a=5&b=10")
@@ -33,3 +34,22 @@ def test_calculate_sum():
             'your_input': None
         }
     ]
+
+# Здесь нужен Mock зависимостей
+def test_sign_up():
+    # Test case 1: валидные входные данные
+    response = client.post(
+        "/auth/sign_up",
+        json={
+            "email": "0x7Z@example.com",
+            "username": "Bob",
+            "password": "12345678",
+            "fullname": "Bob Smith"
+        }
+    )
+    response_json = response.json()
+    assert response.status_code == 201
+    assert "id" in response_json
+    assert response_json["email"] == "0x7Z@example.com"
+    assert response_json["username"] == "Bob"
+    assert response_json["fullname"] == "Bob Smith"
