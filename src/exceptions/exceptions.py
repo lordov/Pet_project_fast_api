@@ -1,8 +1,4 @@
-# exceptions.py
-from typing import Any, Dict
-from typing_extensions import Annotated, Doc
 from fastapi import HTTPException, status
-from fastapi.exceptions import ResponseValidationError
 
 
 class CustomException(HTTPException):
