@@ -5,12 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
 
-from src.exceptions.exceptions import UserAlreadyExists
-from src.api.tasks.models import Task
-from src.api.tasks.schemas import AddTaskSchema, TaskResponseSchema, TaskSchema
-from src.api.users.models import User
-from src.api.users.schemas import UserCreate
-from src.core.security.pwdcrypt import verify_password, password_hasher
+from exceptions.exceptions import UserAlreadyExists
+from api.tasks.models import Task
+from api.tasks.schemas import AddTaskSchema, TaskResponseSchema, TaskSchema
+from api.users.models import User
+from api.users.schemas import UserCreate
+from core.security.pwdcrypt import verify_password, password_hasher
 
 
 async def regisrty_user(
@@ -37,7 +37,7 @@ async def regisrty_user(
     except IntegrityError:
         await session.rollback()
         raise UserAlreadyExists(
-            msg=[f"User with id {user_in.email} already exists"])
+            msg=[f"User with id {user_in.username} already exists"])
 
     except Exception as e:
         await session.rollback()

@@ -15,17 +15,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.templating import Jinja2Templates
 
 
-from src.api.users.schemas import UserOut, UserSchema
-from src.api.router import all_routers
+from api.users.schemas import UserOut, UserSchema
+from api.router import all_routers
 
-from src.core.security.auth import (
+from core.security.auth import (
     get_current_active_user
 )
-from src.exceptions.exceptions import (
+from exceptions.exceptions import (
     CustomException, UserNotFoundException,
     UserAlreadyExists
 )
-from src.exceptions.exceptions_handlers import (
+from exceptions.exceptions_handlers import (
     custom_exception_handler, validation_exception_handler,
     user_not_found_exception_handler,
     user_already_exists_handler
@@ -52,7 +52,8 @@ templates = Jinja2Templates(directory="templates")
 app.add_exception_handler(CustomException, custom_exception_handler)
 app.add_exception_handler(RequestValidationError,
                           validation_exception_handler)
-app.add_exception_handler(UserNotFoundException, user_not_found_exception_handler)
+app.add_exception_handler(UserNotFoundException,
+                          user_not_found_exception_handler)
 app.add_exception_handler(UserAlreadyExists, user_already_exists_handler)
 
 
@@ -70,6 +71,11 @@ async def read_users_me(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
 ):
     return current_user
+
+
+@app.get("/sum/")
+def calculate_sum(a: int, b: int):
+    return {"result": a + b}
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@ from sqlalchemy import (
     Column, Integer, String, Boolean, ForeignKey
 )
 from sqlalchemy.orm import relationship
-from src.api.tasks.schemas import TaskSchema
-from src.db.base import Base
+from api.tasks.schemas import TaskSchema
+from db.base import Base
 
 
 class Task(Base):

@@ -2,8 +2,8 @@ from fastapi import Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import ResponseValidationError
 from fastapi.responses import JSONResponse
-from src.exceptions.schemas import ErrorResponseModel
-from src.exceptions.exceptions import CustomException
+from exceptions.schemas import ErrorResponseModel
+from exceptions.exceptions import CustomException
 
 
 async def custom_exception_handler(request: Request, exc: CustomException):

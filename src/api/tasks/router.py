@@ -2,15 +2,15 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.tasks.schemas import (
+from api.tasks.schemas import (
     TaskSchema, AddTaskSchema,
     TaskResponseSchema, MessageResponse
 )
-from src.api.users.schemas import Role, UserSchema
+from api.users.schemas import Role, UserSchema
 
-from src.core.security.auth import check_role, get_current_active_user
-from src.db.base import get_async_session
-from src.db.db import (
+from core.security.auth import check_role, get_current_active_user
+from db.base import get_async_session
+from db.db import (
     add_task, get_all_tasks_db,
     get_task_db, update_task_db, delete_task_db
 )

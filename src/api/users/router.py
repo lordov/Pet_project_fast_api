@@ -3,13 +3,13 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.exceptions.exceptions import UserNotFoundException
-from src.db.base import get_async_session
-from src.db.db import get_all_user
-from src.core.security.auth import check_role, get_current_active_user, oauth2_scheme
-from src.api.users.models import User
-from src.api.users.schemas import Role, UserOut, UserSchema
-from src.exceptions.schemas import ErrorResponseModel
+from exceptions.exceptions import UserNotFoundException
+from db.base import get_async_session
+from db.db import get_all_user
+from core.security.auth import check_role, get_current_active_user, oauth2_scheme
+from api.users.models import User
+from api.users.schemas import Role, UserOut, UserSchema
+from exceptions.schemas import ErrorResponseModel
 
 
 router = APIRouter(

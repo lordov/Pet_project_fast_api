@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
-from src.api.tasks.models import Task
-from src.db.base import Base
-from src.api.users.schemas import UserInDB
+from api.tasks.models import Task
+from db.base import Base
+from api.users.schemas import UserInDB
 
 
 class User(Base):

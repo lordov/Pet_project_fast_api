@@ -8,7 +8,7 @@ class TaskSchema(BaseModel):
     user_id: int
     completed: bool
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -16,7 +16,7 @@ class AddTaskSchema(BaseModel):
     title: str
     description: str | None = None
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -25,12 +25,12 @@ class TaskResponseSchema(BaseModel):
     title: str
     description: str
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
 class MessageResponse(BaseModel):
     message: str
 
-    class Config:
+    class ConfigDict:
         from_attributes = True

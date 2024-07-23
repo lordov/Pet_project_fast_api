@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Type
 
-from src.db.base import async_session_maker
+from db.base import async_session_maker
 
 
 

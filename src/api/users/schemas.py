@@ -18,7 +18,7 @@ class UserSchema(BaseModel):
     is_superuser: bool | None = False
     is_verified: bool | None = False
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -32,7 +32,7 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=16, max_length=64)
     full_name: str | None = None
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
