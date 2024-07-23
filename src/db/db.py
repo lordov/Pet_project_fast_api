@@ -2,8 +2,10 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 
+from src.exceptions.exceptions import UserAlreadyExists
 from src.api.tasks.models import Task
 from src.api.tasks.schemas import AddTaskSchema, TaskResponseSchema, TaskSchema
 from src.api.users.models import User
@@ -31,6 +33,11 @@ async def regisrty_user(
         # Получение пользователя из базы данных по сгенерированному ID
         user_saved = await session.get(User, user_id)
         return user_saved
+
+    except IntegrityError:
+        await session.rollback()
+        raise UserAlreadyExists(
+            msg=[f"User with id {user_in.email} already exists"])
 
     except Exception as e:
         await session.rollback()

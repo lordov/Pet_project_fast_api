@@ -7,6 +7,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+from src.exceptions.exceptions import UserAlreadyExists
+from src.exceptions.schemas import ErrorResponseModel
 from src.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 
 from src.db.base import get_async_session
@@ -32,7 +34,17 @@ router = APIRouter(
 # Присвоение токена при входе в систему
 
 
-@router.post("/sign_up", response_model=UserOut)
+@router.post(
+    "/sign_up",
+    response_model=UserOut,
+    status_code=status.HTTP_201_CREATED,
+    summary='Sign up',
+    description='The endpoint creates new user',
+    responses={
+        status.HTTP_201_CREATED: {"model": UserOut},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ErrorResponseModel},
+    }
+)
 async def create_user(
     new_user: UserCreate,
     session: AsyncSession = Depends(get_async_session),
@@ -42,6 +54,9 @@ async def create_user(
         return user_saved
     except ResponseValidationError:
         raise ResponseValidationError
+    
+    except UserAlreadyExists as uae:
+        raise uae
     except Exception as e:
         return {
             "message": "User not created",
