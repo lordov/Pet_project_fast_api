@@ -41,12 +41,9 @@ async def get_tasks(
 async def get_task(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
     task_id: int,
-    session: AsyncSession = Depends(get_async_session)
+    task_service: TaskService = Depends(get_todo_service),
 ):
-    task = await get_one_task_db(session, task_id, current_user.id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return task
+    return await task_service.get_one_task(task_id, current_user.id)
 
 
 @router_task.put("/update_task/{task_id}", response_model=TaskResponseSchema)
@@ -55,16 +52,16 @@ async def update_task(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
     task_id: int,
     task: AddTaskSchema,
-    session: AsyncSession = Depends(get_async_session),
+    task_service: TaskService = Depends(get_todo_service),
 ):
-    try:
-        task_db = await update_task_db(session, task, task_id, current_user.id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    return task_db
+    return await task_service.update_task(task_id, task, current_user.id)
 
 
-@router_task.post("/add_task", response_model=TaskSchema, status_code=status.HTTP_201_CREATED)
+@router_task.post(
+    "/add_task",
+    response_model=TaskSchema,
+    status_code=status.HTTP_201_CREATED
+)
 @check_role(role=[Role.USER, Role.ADMIN])
 async def add_task_to_db(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
@@ -75,16 +72,15 @@ async def add_task_to_db(
     return await task_service.add_task(task, user_id)
 
 
-@router_task.delete("/delete_task/{task_id}", response_model=MessageResponse, status_code=status.HTTP_200_OK)
+@router_task.delete(
+    "/delete_task/{task_id}",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK
+)
 @check_role(role=[Role.USER, Role.ADMIN])
 async def delete_task(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
     task_id: int,
-    session: AsyncSession = Depends(get_async_session)
+    task_service: TaskService = Depends(get_todo_service),
 ):
-    try:
-        del_task = await delete_task_db(session, task_id, current_user.id)
-        if del_task:
-            return MessageResponse(message="Task deleted successfully")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await task_service.delete_task(task_id, current_user.id)

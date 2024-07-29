@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from api.tasks.schemas import TaskSchema, AddTaskSchema, TaskResponseSchema
+from api.tasks.schemas import MessageResponse, TaskSchema, AddTaskSchema, TaskResponseSchema
 from utils.unit_of_work import IUnitOfWork
 from api.tasks.models import Task
 
@@ -25,3 +25,24 @@ class TaskService:
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
             return [TaskResponseSchema.model_validate(task) for task in tasks]
+
+    async def get_one_task(self, task_id: int, user_id: int) -> TaskSchema:
+        async with self.uow:
+            task = await self.uow.task.get_one(id=task_id, user_id=user_id)
+            if not task:
+                raise HTTPException(
+                    status_code=404, detail="Task not found")
+            return TaskSchema.model_validate(task)
+
+    async def update_task(self, task_id: int, data: AddTaskSchema, user_id: int) -> TaskResponseSchema:
+        async with self.uow:
+            uppdated_task = await self.uow.task.edit_one(id=task_id, data=data.model_dump(), user_id=user_id)
+            await self.uow.commit()
+            return TaskResponseSchema.model_validate(uppdated_task)
+        
+    async def delete_task(self, task_id: int, user_id: int):
+        async with self.uow:
+            deleted_task = await self.uow.task.delete_one(id=task_id, user_id=user_id)
+            await self.uow.commit()
+            return MessageResponse(message=f"Task №{deleted_task.id} deleted successfully")
+
