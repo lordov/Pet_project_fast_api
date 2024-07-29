@@ -24,7 +24,7 @@ class User(Base):
         return UserInDB(
             id=self.id,
             email=self.email,
-            full_name=self.full_name,
+            full_name=self.fullname,
             role=self.role,
             username=self.username,
             hashed_password=self.hashed_password,

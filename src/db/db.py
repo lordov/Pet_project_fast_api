@@ -69,7 +69,7 @@ async def authenticate_user(
     password: str,
     session: AsyncSession
 ):
-    user: User = await get_user(username, session)
+    user = await get_user(username, session)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -84,7 +84,7 @@ async def get_all_tasks_db(session: AsyncSession, user_id: int):
     return result_model
 
 
-async def get_task_db(session: AsyncSession, task_id: int, user_id: int):
+async def get_one_task_db(session: AsyncSession, task_id: int, user_id: int):
     query = select(Task).where(Task.id == task_id and user_id == user_id)
     result = await session.execute(query)
     try:
@@ -116,7 +116,7 @@ async def update_task_db(session: AsyncSession, task: AddTaskSchema, task_id: in
     )
 
 
-async def add_task(session: AsyncSession, task: AddTaskSchema, user_id: int):
+async def add_task_db(session: AsyncSession, task: AddTaskSchema, user_id: int):
     new_task = Task(**task.model_dump(), user_id=user_id)
     session.add(new_task)
     await session.commit()
