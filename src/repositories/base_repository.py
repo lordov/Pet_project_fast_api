@@ -37,17 +37,18 @@ class SQLAlchemyRepository(AbstractRepository):
         self.session = session
 
     async def add_one(self, data: dict, user_id: Optional[int] = None) -> int:
-        data['user_id'] = user_id
+        if user_id is not None:
+            data['user_id'] = user_id
         stmt = insert(self.model).values(**data).returning(self.model)
-        res = await self.session.execute(stmt)
-        return res.scalar_one()
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
 
     async def edit_one(self, id: int, data: dict, user_id: Optional[int] = None) -> int:
         stmt = update(self.model).values(**data).where(self.model.id == id).returning(self.model)
         if user_id is not None:
             stmt = stmt.where(self.model.user_id == user_id).returning(self.model)
-        res = await self.session.execute(stmt)
-        return res.scalar_one()
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
 
     async def get_all(self, user_id: Optional[int] = None):
         query = select(self.model)

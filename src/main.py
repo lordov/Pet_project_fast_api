@@ -1,26 +1,15 @@
-import time
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 import uvicorn
 
-from typing import Annotated
-
 from fastapi import (
-    FastAPI, HTTPException, Request,
-    status, Depends, Response
+    FastAPI, Depends, Request
 )
 
 from fastapi.exceptions import RequestValidationError
 from fastapi.templating import Jinja2Templates
 
-
-from api.users.schemas import UserOut, UserSchema
 from api.router import all_routers
 
-from core.security.auth import (
-    get_current_active_user
-)
 from exceptions.exceptions import (
     CustomException, UserNotFoundException,
     UserAlreadyExists
@@ -30,6 +19,7 @@ from exceptions.exceptions_handlers import (
     user_not_found_exception_handler,
     user_already_exists_handler
 )
+from api.middleware.middleware import additional_processing, logging_middleware
 
 
 app = FastAPI(
@@ -37,18 +27,11 @@ app = FastAPI(
 )
 
 
-@app.middleware("http")
-async def additional_processing(request: Request, call_next):
-    start_time = time.time()
-    response: Response = await call_next(request)
-    process_time = time.time() - start_time
-    if response.status_code // 100 == 4:
-        response.headers["X-ErrorHandleTime"] = str(process_time)
-    return response
-
 # Указываем директорию с шаблонами
 templates = Jinja2Templates(directory="templates")
 
+app.middleware("http")(logging_middleware)
+app.middleware("http")(additional_processing)
 app.add_exception_handler(CustomException, custom_exception_handler)
 app.add_exception_handler(RequestValidationError,
                           validation_exception_handler)
@@ -64,20 +47,6 @@ for router in all_routers:
 @app.get('/')
 async def html_answer(request: Request):
     return templates.TemplateResponse('index.html', {"request": request})
-
-
-@app.get("/mine", response_model=UserOut)
-async def read_users_me(
-    current_user: Annotated[UserSchema, Depends(get_current_active_user)],
-):
-    return current_user
-
-# Для написания теста
-
-
-@app.get("/sum/")
-def calculate_sum(a: int, b: int):
-    return {"result": a + b}
 
 
 if __name__ == "__main__":

@@ -8,7 +8,6 @@ from core.config import (
     DB_PASS_PET, DB_PORT_PET, DB_USER_PET
 )
 
-# Не забыть поменять в alembic.ini
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER_PET}:{DB_PASS_PET}@{DB_HOST_PET}:{DB_PORT_PET}/{DB_NAME_PET}"
 # Для базовых тестов
 DATABASE_LITE = "sqlite+aiosqlite:///sqlite.db"

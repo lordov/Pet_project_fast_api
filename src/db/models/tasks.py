@@ -2,7 +2,7 @@ from sqlalchemy import (
     Column, Integer, String, Boolean, ForeignKey
 )
 from sqlalchemy.orm import relationship
-from api.tasks.schemas import TaskSchema
+from api.schemas.tasks import TaskSchema
 from db.base import Base
 
 

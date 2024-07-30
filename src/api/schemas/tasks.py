@@ -11,7 +11,7 @@ class TaskSchema(BaseModel):
     completed: bool
 
 
-class AddTaskSchema(BaseModel):
+class CreateTask(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     title: str

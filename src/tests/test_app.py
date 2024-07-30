@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, AsyncMock
 from main import app
-from api.users.schemas import UserCreate, UserOut
+from api.schemas.users import UserCreate, UserOut
 
 client = TestClient(app)
 

@@ -14,12 +14,12 @@ from core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from db.base import get_async_session
 from db.db import authenticate_user, regisrty_user
 
-from api.auth.models import Token
+from api.schemas.token import Token
 from core.security.auth import (
     create_access_token, get_current_active_user,
     check_role
 )
-from api.users.schemas import (
+from api.schemas.users import (
     UserCreate, UserOut,
     UserSchema, Role
 )

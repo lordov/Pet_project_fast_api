@@ -1,14 +1,14 @@
 from fastapi import HTTPException
-from api.tasks.schemas import MessageResponse, TaskSchema, AddTaskSchema, TaskResponseSchema
+from api.schemas.tasks import MessageResponse, TaskSchema, CreateTask, TaskResponseSchema
 from utils.unit_of_work import IUnitOfWork
-from api.tasks.models import Task
+from db.models.tasks import Task
 
 
 class TaskService:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def add_task(self, data: AddTaskSchema, user_id: int) -> TaskSchema:
+    async def add_task(self, data: CreateTask, user_id: int) -> TaskSchema:
         async with self.uow:
             try:
                 task: Task = await self.uow.task.add_one(data.model_dump(), user_id=user_id)
@@ -34,15 +34,14 @@ class TaskService:
                     status_code=404, detail="Task not found")
             return TaskSchema.model_validate(task)
 
-    async def update_task(self, task_id: int, data: AddTaskSchema, user_id: int) -> TaskResponseSchema:
+    async def update_task(self, task_id: int, data: CreateTask, user_id: int) -> TaskResponseSchema:
         async with self.uow:
             uppdated_task = await self.uow.task.edit_one(id=task_id, data=data.model_dump(), user_id=user_id)
             await self.uow.commit()
             return TaskResponseSchema.model_validate(uppdated_task)
-        
+
     async def delete_task(self, task_id: int, user_id: int):
         async with self.uow:
             deleted_task = await self.uow.task.delete_one(id=task_id, user_id=user_id)
             await self.uow.commit()
             return MessageResponse(message=f"Task №{deleted_task.id} deleted successfully")
-

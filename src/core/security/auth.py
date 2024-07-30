@@ -8,9 +8,8 @@ from fastapi import status, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
-from api.users.schemas import UserSchema, Role
-from api.auth.models import TokenData
+from api.schemas.users import UserSchema, Role
+from api.schemas.token import TokenData
 from db.db import get_user
 from db.base import get_async_session
 from core.config import SECRET_KEY, ALGORITHM
