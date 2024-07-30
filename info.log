@@ -50,3 +50,7 @@
 2024-07-30 12:48:30,269 - middleware.middleware - INFO - Outgoing response code: 200
 2024-07-30 12:48:37,222 - middleware.middleware - INFO - Incoming request: GET /users/me
 2024-07-30 12:49:23,809 - middleware.middleware - INFO - Outgoing response code: 422
+2024-07-30 12:57:37,520 - api.middleware.middleware - INFO - Incoming request: GET /docs
+2024-07-30 12:57:37,521 - api.middleware.middleware - INFO - Outgoing response code: 200
+2024-07-30 12:57:37,846 - api.middleware.middleware - INFO - Incoming request: GET /openapi.json
+2024-07-30 12:57:37,872 - api.middleware.middleware - INFO - Outgoing response code: 200
