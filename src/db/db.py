@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from exceptions.exceptions import UserAlreadyExists
 from db.models.tasks import Task
-from api.schemas.tasks import CreateTask, TaskResponseSchema, TaskSchema
+from api.schemas.tasks import TaskCreate, TaskResponse, TaskSchema
 from db.models.users import User
 from api.schemas.users import UserCreate
 from core.security.pwdcrypt import verify_password, password_hasher
@@ -93,7 +93,7 @@ async def get_one_task_db(session: AsyncSession, task_id: int, user_id: int):
     return db_dict
 
 
-async def update_task_db(session: AsyncSession, task: CreateTask, task_id: int, user_id: int):
+async def update_task_db(session: AsyncSession, task: TaskCreate, task_id: int, user_id: int):
     stmt = (
         update(Task)
         .where(Task.id == task_id, Task.user_id == user_id)
@@ -108,14 +108,14 @@ async def update_task_db(session: AsyncSession, task: CreateTask, task_id: int, 
     if not updated_task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    return TaskResponseSchema(
+    return TaskResponse(
         id=updated_task.id,
         title=updated_task.title,
         description=updated_task.description
     )
 
 
-async def add_task_db(session: AsyncSession, task: CreateTask, user_id: int):
+async def add_task_db(session: AsyncSession, task: TaskCreate, user_id: int):
     new_task = Task(**task.model_dump(), user_id=user_id)
     session.add(new_task)
     await session.commit()

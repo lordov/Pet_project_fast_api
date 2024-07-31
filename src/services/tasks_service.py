@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from api.schemas.tasks import MessageResponse, TaskSchema, CreateTask, TaskResponseSchema
+from api.schemas.tasks import MessageResponse, TaskSchema, TaskCreate, TaskResponse, TaskUpdate
 from utils.unit_of_work import IUnitOfWork
 from db.models.tasks import Task
 
@@ -8,7 +8,7 @@ class TaskService:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def add_task(self, data: CreateTask, user_id: int) -> TaskSchema:
+    async def add_task(self, data: TaskCreate, user_id: int) -> TaskSchema:
         async with self.uow:
             try:
                 task: Task = await self.uow.task.add_one(data.model_dump(), user_id=user_id)
@@ -18,13 +18,13 @@ class TaskService:
             await self.uow.commit()
             return task_to_return
 
-    async def get_all_tasks(self, user_id: int) -> list[TaskResponseSchema]:
+    async def get_all_tasks(self, user_id: int) -> list[TaskResponse]:
         async with self.uow:
             try:
                 tasks = await self.uow.task.get_all(user_id=user_id)
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
-            return [TaskResponseSchema.model_validate(task) for task in tasks]
+            return [TaskResponse.model_validate(task) for task in tasks]
 
     async def get_one_task(self, task_id: int, user_id: int) -> TaskSchema:
         async with self.uow:
@@ -34,11 +34,11 @@ class TaskService:
                     status_code=404, detail="Task not found")
             return TaskSchema.model_validate(task)
 
-    async def update_task(self, task_id: int, data: CreateTask, user_id: int) -> TaskResponseSchema:
+    async def update_task(self, task_id: int, data: TaskUpdate, user_id: int) -> TaskResponse:
         async with self.uow:
             uppdated_task = await self.uow.task.edit_one(id=task_id, data=data.model_dump(), user_id=user_id)
             await self.uow.commit()
-            return TaskResponseSchema.model_validate(uppdated_task)
+            return TaskResponse.model_validate(uppdated_task)
 
     async def delete_task(self, task_id: int, user_id: int):
         async with self.uow:

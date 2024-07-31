@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas.tasks import (
-    TaskSchema, CreateTask,
-    TaskResponseSchema, MessageResponse
+    TaskSchema, TaskCreate,
+    TaskResponse, MessageResponse,
+    TaskUpdate
 )
 from api.schemas.users import Role, UserSchema
 
@@ -25,7 +26,7 @@ async def get_todo_service(uow: IUnitOfWork = Depends(UnitOfWork)) -> TaskServic
     return TaskService(uow)
 
 
-@router_task.get("/tasks", response_model=list[TaskResponseSchema])
+@router_task.get("/tasks", response_model=list[TaskResponse])
 @check_role(role=[Role.USER, Role.ADMIN])
 async def get_tasks(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
@@ -45,12 +46,12 @@ async def get_task(
     return await task_service.get_one_task(task_id, current_user.id)
 
 
-@router_task.put("/tasks/{task_id}", response_model=TaskResponseSchema)
+@router_task.put("/tasks/{task_id}", response_model=TaskResponse)
 @check_role(role=[Role.USER, Role.ADMIN])
 async def update_task(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
     task_id: int,
-    task: CreateTask,
+    task: TaskUpdate,
     task_service: TaskService = Depends(get_todo_service),
 ):
     return await task_service.update_task(task_id, task, current_user.id)
@@ -64,7 +65,7 @@ async def update_task(
 @check_role(role=[Role.USER, Role.ADMIN])
 async def create_task(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
-    task: CreateTask,
+    task: TaskCreate,
     task_service: TaskService = Depends(get_todo_service),
 ):
     user_id = current_user.id

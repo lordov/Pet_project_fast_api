@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.schemas.tasks import TaskSchema, CreateTask, TaskResponseSchema
+from api.schemas.tasks import TaskSchema, TaskCreate, TaskResponse
 from db.models.tasks import Task
 from repositories.base_repository import SQLAlchemyRepository
 from sqlalchemy import delete, insert, select, update

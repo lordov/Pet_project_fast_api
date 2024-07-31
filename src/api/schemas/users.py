@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from enum import Enum
 
 
@@ -9,17 +9,16 @@ class Role(Enum):
 
 
 class UserSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
     email: EmailStr
     role: Role | None = 'guest'
-    full_name: str | None = None
+    fullname: str | None = None
     is_active: bool | None = True
     is_superuser: bool | None = False
     is_verified: bool | None = False
-
-    class ConfigDict:
-        from_attributes = True
 
 
 class UserInDB(UserSchema):
@@ -27,16 +26,17 @@ class UserInDB(UserSchema):
 
 
 class UserCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     email: EmailStr
     username: str
     password: str = Field(min_length=8, max_length=64)
     fullname: str | None = None
 
-    class ConfigDict:
-        from_attributes = True
-
 
 class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     email: EmailStr
     username: str
@@ -44,6 +44,8 @@ class UserOut(BaseModel):
 
 
 class ResponseModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     message: str
     result: UserOut | None = None
     error: str | None = None

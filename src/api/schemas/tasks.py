@@ -11,14 +11,22 @@ class TaskSchema(BaseModel):
     completed: bool
 
 
-class CreateTask(BaseModel):
+class TaskCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     title: str
     description: str | None = None
 
 
-class TaskResponseSchema(BaseModel):
+class TaskUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    title: str
+    description: str | None = None
+    completed: bool
+
+
+class TaskResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     title: str

@@ -5,6 +5,7 @@ from sqlalchemy import select, insert, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from db.base import Base
+from db.models.users import User
 
 
 class AbstractRepository(ABC):
@@ -36,14 +37,14 @@ class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def add_one(self, data: dict, user_id: Optional[int] = None) -> int:
+    async def add_one(self, data: dict, user_id: Optional[int] = None) -> User:
         if user_id is not None:
             data['user_id'] = user_id
         stmt = insert(self.model).values(**data).returning(self.model)
         result = await self.session.execute(stmt)
         return result.scalar_one()
 
-    async def edit_one(self, id: int, data: dict, user_id: Optional[int] = None) -> int:
+    async def edit_one(self, id: int, data: dict, user_id: Optional[int] = None) -> User:
         stmt = update(self.model).values(**data).where(self.model.id == id).returning(self.model)
         if user_id is not None:
             stmt = stmt.where(self.model.user_id == user_id).returning(self.model)
