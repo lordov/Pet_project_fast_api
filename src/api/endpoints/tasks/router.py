@@ -9,6 +9,7 @@ from api.schemas.tasks import (
 )
 from api.schemas.users import Role, UserSchema
 
+from core.exceptions.schemas import ErrorResponseModel
 from core.security.auth import check_role, get_current_active_user
 from db.base import get_async_session
 from db.db import (
@@ -36,7 +37,16 @@ async def get_tasks(
     return await task_service.get_all_tasks(user_id=current_user.id)
 
 
-@router_task.get("/tasks/{task_id}", response_model=TaskSchema)
+@router_task.get(
+        "/tasks/{task_id}", 
+        response_model=TaskSchema,
+        summary="Get task by id",
+        description="The ednpoint returns task by id",
+        responses={
+            status.HTTP_200_OK: {"model": TaskSchema},
+            status.HTTP_404_NOT_FOUND: {"model": ErrorResponseModel},
+        },
+)
 @check_role(role=[Role.USER, Role.ADMIN])
 async def get_task(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],

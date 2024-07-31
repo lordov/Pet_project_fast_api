@@ -4,7 +4,7 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from exceptions.exceptions import UserAlreadyExists
+from core.exceptions.exceptions import UserAlreadyExists
 from db.models.tasks import Task
 from api.schemas.tasks import TaskCreate, TaskResponse, TaskSchema
 from db.models.users import User

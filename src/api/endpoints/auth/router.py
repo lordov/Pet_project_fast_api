@@ -7,9 +7,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from exceptions.exceptions import UserAlreadyExists
-from exceptions.schemas import ErrorResponseModel
-from core.config import ACCESS_TOKEN_EXPIRE_MINUTES
+from core.exceptions.exceptions import UserAlreadyExists
+from core.exceptions.schemas import ErrorResponseModel
+from core.config.jwt import ACCESS_TOKEN_EXPIRE_MINUTES
 
 from db.base import get_async_session
 from db.db import authenticate_user, regisrty_user

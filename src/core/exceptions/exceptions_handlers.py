@@ -2,14 +2,18 @@ from fastapi import Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import ResponseValidationError
 from fastapi.responses import JSONResponse
-from exceptions.schemas import ErrorResponseModel
-from exceptions.exceptions import CustomException
+from core.exceptions.schemas import ErrorResponseModel
+from core.exceptions.exceptions import CustomHTTPException
 
 
-async def custom_exception_handler(request: Request, exc: CustomException):
+async def custom_http_exception_handler(request: Request, exc: CustomHTTPException):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"error": exc.detail}
+        content={
+            "status_code": exc.status_code,
+            "detail": exc.detail,
+            "errors": exc.errors
+        },
     )
 
 

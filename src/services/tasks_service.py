@@ -1,5 +1,16 @@
 from fastapi import HTTPException
-from api.schemas.tasks import MessageResponse, TaskSchema, TaskCreate, TaskResponse, TaskUpdate
+
+from api.schemas.tasks import (
+    MessageResponse, TaskSchema,
+    TaskCreate, TaskResponse, TaskUpdate
+)
+from core.exceptions.exceptions import (
+    AlreadyExistError,
+    DBError,
+    MultipleRowsFoundError,
+    NoRowsFoundError,
+)
+
 from utils.unit_of_work import IUnitOfWork
 from db.models.tasks import Task
 
@@ -29,9 +40,6 @@ class TaskService:
     async def get_one_task(self, task_id: int, user_id: int) -> TaskSchema:
         async with self.uow:
             task = await self.uow.task.get_one(id=task_id, user_id=user_id)
-            if not task:
-                raise HTTPException(
-                    status_code=404, detail="Task not found")
             return TaskSchema.model_validate(task)
 
     async def update_task(self, task_id: int, data: TaskUpdate, user_id: int) -> TaskResponse:

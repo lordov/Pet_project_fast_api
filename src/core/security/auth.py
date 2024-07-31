@@ -12,7 +12,7 @@ from api.schemas.users import UserSchema, Role
 from api.schemas.token import TokenData
 from db.db import get_user
 from db.base import get_async_session
-from core.config import SECRET_KEY, ALGORITHM
+from core.config.jwt import SECRET_KEY, ALGORITHM
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", scheme_name="JWT")
