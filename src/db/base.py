@@ -3,12 +3,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.config import (
+from core.config.config import (
     DB_HOST_PET, DB_NAME_PET,
     DB_PASS_PET, DB_PORT_PET, DB_USER_PET
 )
 
-# Не забыть поменять в alembic.ini
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER_PET}:{DB_PASS_PET}@{DB_HOST_PET}:{DB_PORT_PET}/{DB_NAME_PET}"
 # Для базовых тестов
 DATABASE_LITE = "sqlite+aiosqlite:///sqlite.db"

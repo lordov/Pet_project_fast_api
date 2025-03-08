@@ -5,11 +5,9 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.db.base import Base, DATABASE_LITE, DATABASE_URL
-from src.api.users.models import User
-from src.api.tasks.models import Task
-
-
+from db.base import Base, DATABASE_LITE, DATABASE_URL
+from db.models.users import User
+from db.models.tasks import Task
 
 
 config = context.config
